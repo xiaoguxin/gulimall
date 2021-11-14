@@ -7,7 +7,12 @@ spring:
     password:
     url: jdbc:mysql://localhost:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: gulimall-order
 # MapperScan
 # sql\u6620\u5C04\u6587\u4EF6\u4F4D\u7F6E
 mybatis-plus:
