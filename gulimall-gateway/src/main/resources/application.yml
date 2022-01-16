@@ -18,5 +18,7 @@ spring:
           predicates:
             # 当访问http://localhost:88/api/**路由到http://localhost:对应端口/**
             - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
   application:
     name: gulimall-gateway
