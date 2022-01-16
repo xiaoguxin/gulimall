@@ -16,7 +16,7 @@ spring:
         - id: admin_route
           uri: lb://renren-fast
           predicates:
-            # 当访问http://localhost:88/api/**路由到localhost:对应端口/renren-fast/**
+            # 当访问http://localhost:88/api/**路由到http://localhost:对应端口/**
             - Path=/api/**
   application:
     name: gulimall-gateway
