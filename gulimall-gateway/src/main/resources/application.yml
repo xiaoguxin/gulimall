@@ -13,6 +13,15 @@ spring:
           predicates:
             # 当访问http://localhost:88/coupon/coupon/list路由到localhost:7000/coupon/coupon/list
             - Path=/coupon/coupon/list
+
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            # 当访问http://localhost:88/api/**路由到http://localhost:对应端口/**
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:
