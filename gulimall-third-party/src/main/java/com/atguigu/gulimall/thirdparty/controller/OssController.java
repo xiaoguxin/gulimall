@@ -20,7 +20,7 @@ import java.util.Map;
 public class OssController {
 
     @Autowired
-    OSSClient ossClient;
+    OSS ossClient;
 
     @Value("${spring.cloud.alicloud.oss.endpoint}")
     private String endpoint;
