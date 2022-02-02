@@ -6,6 +6,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
+import com.atguigu.common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class OssController {
     private String accessId;
 
     @RequestMapping("/oss/policy")
-    public Map<String, String> policy(){
+    public R policy() {
 
         //https://mall-local.oss-cn-guangzhou.aliyuncs.com/20220129195025.jpg
         String host = "https://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
@@ -41,7 +42,7 @@ public class OssController {
         // callbackUrl为上传回调服务器的URL，请将下面的IP和Port配置为您自己的真实信息。
         //String callbackUrl = "http://88.88.88.88:8888";
 
-        String dir = format+"/"; // 用户上传文件时指定的前缀。
+        String dir = format + "/"; // 用户上传文件时指定的前缀。
 
         Map<String, String> respMap = null;
         try {
@@ -74,6 +75,6 @@ public class OssController {
         } finally {
             ossClient.shutdown();
         }
-        return respMap;
+        return R.ok().put("data", respMap);
     }
 }
