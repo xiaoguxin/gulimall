@@ -21,6 +21,7 @@ import com.atguigu.gulimall.product.dao.AttrDao;
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service("attrService")
@@ -56,6 +57,28 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         relationEntity.setAttrId(attrEntity.getAttrId());
         relationDao.insert(relationEntity);
 
+    }
+
+    @Override
+    public PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId) {
+        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<>();
+
+        if(catelogId != 0){
+            queryWrapper.eq("catelog_id",catelogId);
+        }
+
+        String key = (String) params.get("key");
+        if (StringUtils.hasLength(key)) {
+            //attr_id attr_name
+            queryWrapper.and((wrapper)->{
+                wrapper.eq("attr_id",key).or().like("attr_name",key);
+            });
+        }
+        IPage<AttrEntity> page = this.page(
+                new Query<AttrEntity>().getPage(params),
+                queryWrapper
+        );
+        return new PageUtils(page);
     }
 
 }
