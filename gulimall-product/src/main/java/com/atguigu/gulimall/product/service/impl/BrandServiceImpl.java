@@ -1,5 +1,8 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -19,6 +22,9 @@ import org.springframework.util.StringUtils;
 @Service("brandService")
 public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> implements BrandService {
 
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         //1、获取key
@@ -34,6 +40,18 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void updateDetail(BrandEntity brand) {
+        //保证冗余字段的数据一致
+        this.updateById(brand);
+        if(StringUtils.hasLength(brand.getName())){
+            //同步更新其他关联表中的数据
+            categoryBrandRelationService.updateBrand(brand.getBrandId(),brand.getName());
+
+            //TODO 更新其他关联
+        }
     }
 
 }
