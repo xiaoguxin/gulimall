@@ -72,7 +72,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         //1、保存基本数据
         this.save(attrEntity);
         //2、保存关联关系
-        if (attr.getAttrType().equals(ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode())) {
+        if (attr.getAttrType().equals(ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode())&&attr.getAttrGroupId()!=null) {
             AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
             log.info("AttrGroupId:{}", attr.getAttrGroupId());
             log.info("AttrId:{}", attrEntity.getAttrId());
@@ -112,7 +112,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                 AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = relationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId()));
                 if (attrAttrgroupRelationEntity != null) {
                     AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
-                    if (attrGroupEntity != null) {
+                    if (attrGroupEntity != null && attrGroupEntity.getAttrGroupId()!=null) {
                         attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
                     }
                 }
