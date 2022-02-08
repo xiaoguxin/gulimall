@@ -56,7 +56,7 @@ public class SkuInfoController {
     //@RequiresPermissions("product:skuinfo:save")
     public R save(@RequestBody SpuSaveVo vo){
 		//skuInfoService.save(skuInfo);
-
+        skuInfoService.saveSpuInfo(vo);
         return R.ok();
     }
 
