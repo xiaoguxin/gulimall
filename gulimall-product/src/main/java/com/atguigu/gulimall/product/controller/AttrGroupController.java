@@ -44,11 +44,18 @@ public class AttrGroupController {
     }
 
     ///product/attrgroup/attr/relation/delete
-
     @PostMapping("/attr/relation/delete")
     public R deleteRelation(@RequestBody  AttrGroupRelationVo[] vos){
         attrService.deleteRelation(vos);
         return R.ok();
+    }
+
+    ///product/attrgroup/{attrgroupId}/noattr/relation
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId,
+                            @RequestParam Map<String, Object> params){
+        PageUtils page = attrService.getNoRelationAttr(params,attrgroupId);
+        return R.ok().put("page",page);
     }
 
 
