@@ -94,6 +94,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return valueEntity;
         }).collect(Collectors.toList());
         attrValueService.saveProductAttr(collect);
+        //5、保存spu的积分信息：gulimall_sms--->sms_spu_bounds
 
         //5、保存当前spu对应的所有sku信息；
         List<Skus> skus = vo.getSkus();
