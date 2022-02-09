@@ -51,10 +51,10 @@ public class SpuBoundsController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     //@RequiresPermissions("coupon:spubounds:save")
     public R save(@RequestBody SpuBoundsEntity spuBounds){
-		spuBoundsService.save(spuBounds);
+        spuBoundsService.save(spuBounds);
 
         return R.ok();
     }
