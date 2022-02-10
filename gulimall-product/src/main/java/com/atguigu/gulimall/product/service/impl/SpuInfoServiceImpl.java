@@ -65,7 +65,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
-
+    /**
+     * //TODO 高级部分再完善
+     * @param vo
+     */
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {
@@ -147,7 +150,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     return skuImagesEntity;
                 }).filter(entity -> {
                     //返回true就是需要，false就是剔除
-                    return !StringUtils.isEmpty(entity.getImgUrl());
+                    return StringUtils.hasLength(entity.getImgUrl());
                 }).collect(Collectors.toList());
                 //5.2）、sku的图片信息；pms_sku_image
                 skuImagesService.saveBatch(imagesEntities);
