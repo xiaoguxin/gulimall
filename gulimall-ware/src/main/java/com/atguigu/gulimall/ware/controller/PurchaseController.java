@@ -28,6 +28,15 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
 
+    ///ware/purchase/merge
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+
+        purchaseService.mergePurchase(mergeVo);
+        return R.ok();
+    }
+
+    ///ware/purchase/unreceive/list
     @RequestMapping("/unreceive/list")
     //@RequiresPermissions("ware:purchase:list")
     public R unreceivelist(@RequestParam Map<String, Object> params){
