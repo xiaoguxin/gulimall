@@ -10,7 +10,7 @@ import java.util.Map;
  * 商品评价回复关系
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 16:54:42
  */
 public interface CommentReplayService extends IService<CommentReplayEntity> {

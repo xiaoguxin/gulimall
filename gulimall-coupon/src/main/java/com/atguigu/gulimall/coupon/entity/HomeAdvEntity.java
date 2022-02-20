@@ -11,7 +11,7 @@ import lombok.Data;
  * 首页轮播广告
  * 
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 18:56:38
  */
 @Data

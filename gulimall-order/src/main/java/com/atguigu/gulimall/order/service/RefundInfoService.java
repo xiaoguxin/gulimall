@@ -10,7 +10,7 @@ import java.util.Map;
  * 退款信息
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:33:13
  */
 public interface RefundInfoService extends IService<RefundInfoEntity> {

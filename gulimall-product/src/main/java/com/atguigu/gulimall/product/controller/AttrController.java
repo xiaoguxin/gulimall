@@ -21,7 +21,7 @@ import com.atguigu.common.utils.R;
  * 商品属性
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 16:54:42
  */
 @RestController

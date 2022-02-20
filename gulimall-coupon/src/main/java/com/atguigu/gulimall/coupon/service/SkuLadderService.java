@@ -10,7 +10,7 @@ import java.util.Map;
  * 商品阶梯价格
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 18:56:38
  */
 public interface SkuLadderService extends IService<SkuLadderEntity> {

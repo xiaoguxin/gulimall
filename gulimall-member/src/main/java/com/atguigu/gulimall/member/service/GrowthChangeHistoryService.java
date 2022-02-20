@@ -10,7 +10,7 @@ import java.util.Map;
  * 成长值变化历史记录
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:30:45
  */
 public interface GrowthChangeHistoryService extends IService<GrowthChangeHistoryEntity> {

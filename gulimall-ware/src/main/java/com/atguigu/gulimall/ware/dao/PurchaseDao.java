@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
  * 采购信息
  * 
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:35:30
  */
 @Mapper

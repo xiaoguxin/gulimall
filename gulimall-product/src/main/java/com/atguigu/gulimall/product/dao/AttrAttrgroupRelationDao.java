@@ -11,7 +11,7 @@ import java.util.List;
  * 属性&属性分组关联
  * 
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 16:54:42
  */
 @Mapper

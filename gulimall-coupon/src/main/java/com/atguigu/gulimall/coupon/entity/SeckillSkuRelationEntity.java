@@ -12,7 +12,7 @@ import lombok.Data;
  * 秒杀活动商品关联
  * 
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 18:56:38
  */
 @Data

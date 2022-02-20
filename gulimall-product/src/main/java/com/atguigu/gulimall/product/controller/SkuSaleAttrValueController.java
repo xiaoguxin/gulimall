@@ -16,7 +16,7 @@ import java.util.Map;
  * sku销售属性&值
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 16:54:42
  */
 @RestController

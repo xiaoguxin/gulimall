@@ -10,7 +10,7 @@ import java.util.Map;
  * 会员收藏的专题活动
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:30:45
  */
 public interface MemberCollectSubjectService extends IService<MemberCollectSubjectEntity> {

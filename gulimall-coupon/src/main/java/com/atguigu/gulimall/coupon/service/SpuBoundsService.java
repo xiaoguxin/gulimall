@@ -10,7 +10,7 @@ import java.util.Map;
  * 商品spu积分设置
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 18:56:38
  */
 public interface SpuBoundsService extends IService<SpuBoundsEntity> {

@@ -10,7 +10,7 @@ import java.util.Map;
  * 仓库信息
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:35:30
  */
 public interface WareInfoService extends IService<WareInfoEntity> {

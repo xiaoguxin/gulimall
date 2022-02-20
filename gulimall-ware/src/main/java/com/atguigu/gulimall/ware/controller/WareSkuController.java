@@ -21,7 +21,7 @@ import com.atguigu.common.utils.R;
  * 商品库存
  *
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:35:30
  */
 @RestController

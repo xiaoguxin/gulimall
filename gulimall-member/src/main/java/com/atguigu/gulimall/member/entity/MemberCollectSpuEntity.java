@@ -11,7 +11,7 @@ import lombok.Data;
  * 会员收藏的商品
  * 
  * @author sunny
- * @email sunny@gmail.com
+ * @email
  * @date 2021-11-14 19:30:45
  */
 @Data
