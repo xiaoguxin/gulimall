@@ -1,4 +1,6 @@
 #application.yml
+server:
+  port: 12000
 spring:
   cloud:
     nacos:
