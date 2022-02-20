@@ -321,6 +321,27 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }else{
             //远程调用失败
             // TODO 7、重复调用？接口幂等性；重试机制？xxx
+            //Feign调用流程
+            /**
+             * 1、构造请求数据，将对象转为json;
+             *      RequestTemplate template = buildTemplateFromArgs.create(argv);
+             *  2、发送请求进行执行（执行成功会解码响应数据):
+             *      executeAndDecode(template);
+             *  3、执行请求会有重试机制
+             *   while(true){
+             *      try{
+             *          executeAndDecode(template);#异常
+             *       }catch(){
+             *          try{
+             *           retryer.continueOrPropagate(e);#重试（有重试最大次数）
+             *          }catch(){
+             *              throw ex;
+             *          }
+             *           continue;
+             *       }
+             *
+             *   }
+             */
 
         }
     }
