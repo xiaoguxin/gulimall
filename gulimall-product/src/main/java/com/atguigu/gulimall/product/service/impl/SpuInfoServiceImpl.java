@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -236,6 +234,25 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         List<SkuInfoEntity> skuInfos = skuInfoService.getSkusBySpuId(spuId);
 
         //TODO 4、查出当前sku的所有可以被用来检索的规格属性
+        List<ProductAttrValueEntity> baseAttrs = attrValueService.baseAttrlistforspu(spuId);
+        List<Long> attrIds = baseAttrs.stream().map(attr -> {
+            return attr.getAttrId();
+        }).collect(Collectors.toList());
+
+        //过滤需要的attrIds
+        List<Long> searchAttrIds = attrService.selectSearchAttrs(attrIds);
+
+        //过滤需要的baseAttrs
+
+        Set<Long> idSet = new HashSet<>(searchAttrIds);
+
+        List<SkuEsModel.Attrs> attrsList = baseAttrs.stream().filter(item -> {
+            return idSet.contains(item.getAttrId());
+        }).map(item -> {
+            SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attrs);
+            return attrs;
+        }).collect(Collectors.toList());
 
         //2、封装每个sku的信息
         List<SkuEsModel> uoProducts = skuInfos.stream().map(skuInfo -> {
@@ -250,6 +267,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             //TODO 1、发送远程调用，库存系统查询是否有库存
 
             //TODO 2、热度评分。0
+            esModel.setHotScore(0L);
 
             //TODO 3、查询品牌和分类的名字信息
             BrandEntity brand = brandService.getById(esModel.getBrandId());
@@ -259,6 +277,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             CategoryEntity category = categoryService.getById(esModel.getCatalogId());
             esModel.setCatalogName(category.getName());
 
+            //设置检索属性
+            esModel.setAttrs(attrsList);
 
             return esModel;
         }).collect(Collectors.toList());
