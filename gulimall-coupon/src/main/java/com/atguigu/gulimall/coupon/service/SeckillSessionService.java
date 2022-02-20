@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 秒杀活动场次
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 18:56:38
  */

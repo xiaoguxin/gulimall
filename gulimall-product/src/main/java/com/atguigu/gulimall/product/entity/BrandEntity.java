@@ -17,7 +17,7 @@ import javax.validation.constraints.*;
 /**
  * 品牌
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 16:54:42
  */

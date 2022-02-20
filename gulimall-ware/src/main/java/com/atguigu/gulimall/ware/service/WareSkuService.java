@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 商品库存
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 19:35:30
  */

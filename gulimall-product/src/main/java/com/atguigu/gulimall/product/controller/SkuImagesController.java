@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * sku图片
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 16:54:42
  */

@@ -10,7 +10,7 @@ import lombok.Data;
 /**
  * sku销售属性&值
  * 
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 16:54:42
  */

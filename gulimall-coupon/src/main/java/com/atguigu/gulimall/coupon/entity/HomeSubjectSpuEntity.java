@@ -10,7 +10,7 @@ import lombok.Data;
 /**
  * 专题商品
  * 
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 18:56:38
  */

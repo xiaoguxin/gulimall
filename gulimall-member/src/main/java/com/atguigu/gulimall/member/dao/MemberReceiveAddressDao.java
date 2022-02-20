@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 会员收货地址
  * 
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 19:30:45
  */

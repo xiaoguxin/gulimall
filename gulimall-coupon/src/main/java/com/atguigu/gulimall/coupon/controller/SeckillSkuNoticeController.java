@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * 秒杀商品通知订阅
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 18:56:38
  */

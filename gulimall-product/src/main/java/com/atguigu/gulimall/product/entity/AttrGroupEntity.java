@@ -11,7 +11,7 @@ import lombok.Data;
 /**
  * 属性分组
  * 
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 16:54:42
  */

@@ -20,7 +20,7 @@ import com.atguigu.common.utils.R;
 /**
  * 会员登录记录
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 19:30:45
  */

@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * 首页轮播广告
  *
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 18:56:38
  */

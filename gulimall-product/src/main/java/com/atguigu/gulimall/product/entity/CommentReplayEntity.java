@@ -10,7 +10,7 @@ import lombok.Data;
 /**
  * 商品评价回复关系
  * 
- * @author sunny
+ * @author guojiayuan
  * @email
  * @date 2021-11-14 16:54:42
  */
