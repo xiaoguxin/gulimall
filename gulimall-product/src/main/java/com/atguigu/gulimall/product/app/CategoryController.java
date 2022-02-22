@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.product.controller;
+package com.atguigu.gulimall.product.app;
 
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.CategoryEntity;

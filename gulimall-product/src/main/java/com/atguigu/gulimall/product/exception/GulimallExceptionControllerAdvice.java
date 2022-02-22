@@ -14,7 +14,7 @@ import java.util.Map;
  * 集中处理所有异常
  */
 @Slf4j
-@RestControllerAdvice(basePackages = "com.atguigu.gulimall.product.controller")
+@RestControllerAdvice(basePackages = "com.atguigu.gulimall.product.app")
 public class GulimallExceptionControllerAdvice {
 
 
