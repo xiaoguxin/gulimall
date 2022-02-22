@@ -45,6 +45,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--热部署：devtools-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!--模板引擎：thymeleaf-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
