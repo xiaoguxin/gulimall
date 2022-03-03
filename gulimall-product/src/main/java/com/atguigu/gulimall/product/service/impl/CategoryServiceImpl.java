@@ -1,5 +1,7 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.product.dao.CategoryDao;
@@ -12,8 +14,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +28,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -84,6 +91,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        //给缓存中放入json字符串，拿出的json字符串，还需逆转为能用的对象类型；【序列化与反序列化】
+
+        //1、加入缓存逻辑，缓存中存的数据是json字符串
+        //JSON跨语言，跨平台兼容
+        String catalogJSON = redisTemplate.opsForValue().get("catalogJSON");
+        if(StringUtils.isEmpty(catalogJSON)){
+            //2、缓存中没有，查询数据库
+            Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDb();
+            //3、查到的数据再放入缓存，将对象转为json放在缓存中
+            String s = JSON.toJSONString(catalogJsonFromDb);
+            redisTemplate.opsForValue().set("catalogJSON",s);
+            return catalogJsonFromDb;
+        }
+        //转为我们指定的对象。
+        Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+        return result;
+    }
+
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDb(){
 
         /**
          * 1、将数据库的多次查询变为1次
