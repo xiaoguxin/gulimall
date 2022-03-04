@@ -124,7 +124,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             //加锁成功... 执行业务
             //2、设置过期时间,必须和加锁是同步的，原子的
             //redisTemplate.expire("lock",30,TimeUnit.SECONDS);
-            Map<String, List<Catelog2Vo>> dataFromDb = getDataFromDb();//删除锁
+            Map<String, List<Catelog2Vo>> dataFromDb;
+            try {
+                dataFromDb = getDataFromDb();
+            }finally {
+                String script="if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+                //删除锁
+                Long lock1 = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
+            }
             //redisTemplate.delete("lock");
 
             //获取值对比，对比成功删除=原子操作  lua脚本解锁
@@ -133,9 +140,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 //删除我自己的锁
                 redisTemplate.delete("lock");
             }*/
-            String script="if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
-            //删除锁
-            Long lock1 = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
             return dataFromDb;
         }else{
             //加锁失败...重试。类似synchronized()
