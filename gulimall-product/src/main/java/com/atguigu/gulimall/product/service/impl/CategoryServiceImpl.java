@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -125,11 +126,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             //redisTemplate.expire("lock",30,TimeUnit.SECONDS);
             Map<String, List<Catelog2Vo>> dataFromDb = getDataFromDb();//删除锁
             //redisTemplate.delete("lock");
-            String lockValue = redisTemplate.opsForValue().get("lock");
+
+            //获取值对比，对比成功删除=原子操作  lua脚本解锁
+            /*String lockValue = redisTemplate.opsForValue().get("lock");
             if (uuid.equalsIgnoreCase(lockValue)){
                 //删除我自己的锁
                 redisTemplate.delete("lock");
-            }
+            }*/
+            String script="if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+            //删除锁
+            Long lock1 = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
             return dataFromDb;
         }else{
             //加锁失败...重试。类似synchronized()
