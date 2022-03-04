@@ -116,10 +116,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedisLock(){
-            //1、占分布式锁，去redis坑
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", "111");
+        //1、占分布式锁，去redis坑
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", "111",300,TimeUnit.SECONDS);
         if(lock){
             //加锁成功... 执行业务
+            //2、设置过期时间,必须和加锁是同步的，原子的
+            //redisTemplate.expire("lock",30,TimeUnit.SECONDS);
             Map<String, List<Catelog2Vo>> dataFromDb = getDataFromDb();//删除锁
             redisTemplate.delete("lock");
             return dataFromDb;
