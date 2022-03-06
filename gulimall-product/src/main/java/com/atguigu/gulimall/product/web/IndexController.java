@@ -5,6 +5,7 @@ import com.atguigu.gulimall.product.service.CategoryService;
 import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -131,4 +132,32 @@ public class IndexController {
         return s;
     }
 
+    /**
+     * 车库停车，
+     * 3车位
+     * @return
+     * @throws InterruptedException
+     */
+    @ResponseBody
+    @GetMapping("/park")
+    public String park() throws InterruptedException {
+        RSemaphore park = redisson.getSemaphore("park");
+        //park.acquire();//获取一个信号，获取一个值，占一个位 =>没有位置会等待
+        boolean b = park.tryAcquire(); //没有位置就不等待
+        if (b){
+            //执行业务
+        }else {
+            return  "error";
+        }
+
+        return "ok=>"+b;
+    }
+
+    @ResponseBody
+    @GetMapping("/go")
+    public String go() throws InterruptedException {
+        RSemaphore park = redisson.getSemaphore("park");
+        park.release();//释放一个车位
+        return "ok";
+    }
 }
