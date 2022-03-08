@@ -13,7 +13,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -76,17 +82,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 级联更新所有关联的数据
+     *
      * @param category
      */
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
         this.updateById(category);
-        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+        categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
+    //每一个需要缓存的数据我们都来指定要放到那个名字的缓存。【缓存的分区（按照业务类型分）】
+    @Cacheable("category")  //代表当前方法的结果需要缓存，如果缓存中有，方法不再调用。如果缓存中没有，会调用方法，最后将方法的结果放入缓存
     @Override
     public List<CategoryEntity> getLevel1Categorys() {
+        System.out.println("getLevel1Categorys....");
         List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
         return categoryEntities;
     }
@@ -104,7 +114,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //1、加入缓存逻辑，缓存中存的数据是json字符串
         //JSON跨语言，跨平台兼容
         String catalogJSON = redisTemplate.opsForValue().get("catalogJSON");
-        if(StringUtils.isEmpty(catalogJSON)){
+        if (StringUtils.isEmpty(catalogJSON)) {
             //2、缓存中没有，查询数据库
             System.out.println("缓存不命中....查询数据库....");
             Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDbWithRedisLock();
@@ -112,23 +122,47 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
         System.out.println("缓存命中....直接返回....");
         //转为我们指定的对象。
-        Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+        Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
         return result;
     }
 
-    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedisLock(){
+    /**
+     * 缓存里面的数据如何和数据库保持一致
+     * 缓存数据一致性
+     * 1）、双写模式
+     * 2）、失效模式
+     * @return
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedissonLock() {
+
+        //1、锁的名字。锁的粒度，越细越快。
+        //锁的粒度：具体缓存的是某个数据：11-号商品；product-11-lock product-12-lock  product-lock
+        RLock lock = redisson.getLock("catalogJSON");
+        lock.lock();
+
+        Map<String, List<Catelog2Vo>> dataFromDb;
+        try {
+            dataFromDb = getDataFromDb();
+        } finally {
+            lock.unlock();
+        }
+        return dataFromDb;
+    }
+
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedisLock() {
         //1、占分布式锁，去redis坑
         String uuid = UUID.randomUUID().toString();
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,300,TimeUnit.SECONDS);
-        if(lock){
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid, 300, TimeUnit.SECONDS);
+        if (lock) {
             //加锁成功... 执行业务
             //2、设置过期时间,必须和加锁是同步的，原子的
             //redisTemplate.expire("lock",30,TimeUnit.SECONDS);
             Map<String, List<Catelog2Vo>> dataFromDb;
             try {
                 dataFromDb = getDataFromDb();
-            }finally {
-                String script="if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+            } finally {
+                String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
                 //删除锁
                 Long lock1 = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
             }
@@ -141,7 +175,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 redisTemplate.delete("lock");
             }*/
             return dataFromDb;
-        }else{
+        } else {
             //加锁失败...重试。类似synchronized()
             //休眠100ms重试
             return getCatalogJsonFromDbWithRedisLock();//自旋的方式
@@ -191,25 +225,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return stringListMap;
     }
 
-    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithLocalLock(){
-        synchronized (this){
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithLocalLock() {
+        synchronized (this) {
             //得到锁以后，我们应该再去缓存中确认一次，如果没有才需要继续查询
             return getDataFromDb();
         }
     }
 
-    private List<CategoryEntity> getParent_cid(List<CategoryEntity> categoryEntityList,Long parentCid) {
+    private List<CategoryEntity> getParent_cid(List<CategoryEntity> categoryEntityList, Long parentCid) {
         List<CategoryEntity> collect = categoryEntityList.stream().filter(item -> item.getParentCid().equals(parentCid)).collect(Collectors.toList());
 
         return collect;
     }
 
-    private List<Long> findParentPath(Long catelogId,List<Long> paths){
+    private List<Long> findParentPath(Long catelogId, List<Long> paths) {
         //1、收集当前节点id
         paths.add(catelogId);
         CategoryEntity byId = this.getById(catelogId);
-        if(byId.getParentCid()!=0){
-            findParentPath(byId.getParentCid(),paths);
+        if (byId.getParentCid() != 0) {
+            findParentPath(byId.getParentCid(), paths);
         }
         return paths;
     }
