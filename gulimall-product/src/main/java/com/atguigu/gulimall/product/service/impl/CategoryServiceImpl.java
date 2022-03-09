@@ -92,8 +92,23 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
-    //每一个需要缓存的数据我们都来指定要放到那个名字的缓存。【缓存的分区（按照业务类型分）】
-    @Cacheable("category")  //代表当前方法的结果需要缓存，如果缓存中有，方法不再调用。如果缓存中没有，会调用方法，最后将方法的结果放入缓存
+    /**
+     * 1.每一个需要缓存的数据我们都来指定要放到那个名字的缓存。【缓存的分区（按照业务类型分）】
+     * 2.@Cacheable({"category"})
+     *    代表当前方法的结果需要缓存，如果缓存中有，方法不再调用。
+     *    如果缓存中没有，会调用方法，最后将方法的结果放入缓存
+     * 3、默认行为
+     *      1）、如果缓存中有，方法不再调用。
+     *      2）、key默认自动生成：缓存的名字：category::SimpleKey []
+     *      3）、缓存的value的值。默认使用jdk序列化机制。将序列化后的数据存到redis
+     *      4）、默认ttl时间：-1;
+     *  4、自定义
+     *      1）、指定生成的缓存使用的key
+     *      2）、指定缓存的数据的存活时间,配置文件中修改ttl
+     *      3）、将数据保存为json格式(需要自定义缓存管理器)
+     * @return
+     */
+    @Cacheable(value={"category"},key="#root.method.name")
     @Override
     public List<CategoryEntity> getLevel1Categorys() {
         System.out.println("getLevel1Categorys....");
