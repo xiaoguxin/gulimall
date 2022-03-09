@@ -25,6 +25,7 @@ public class MyCacheConfig {
      *      @ConfigurationProperties(prefix = "spring.cache")
      *      public class CacheProperties
      * 2、要让他生效
+     *      @EnableConfigurationProperties(CacheProperties.class)
      * @return
      */
     @Bean
