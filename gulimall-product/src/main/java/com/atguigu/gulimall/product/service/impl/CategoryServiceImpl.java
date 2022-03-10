@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -85,6 +86,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *
      * @param category
      */
+    @CacheEvict(value = "category",key = "'getLevel1Categorys'")
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
