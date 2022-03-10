@@ -86,12 +86,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 级联更新所有关联的数据
      *  @CacheEvict:失效模式
      *  1、同时进行多种缓存操作 Caching
+     *  2、指定删除某个分区下的所有数据
      * @param category
      */
-    @Caching(evict = {
+    /*@Caching(evict = {
             @CacheEvict(value = "category",key = "'getLevel1Categorys'"),
             @CacheEvict(value = "category",key = "'getCatalogJson'")
-    })
+    })*/
+    @CacheEvict(value = "category",allEntries = true)
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
