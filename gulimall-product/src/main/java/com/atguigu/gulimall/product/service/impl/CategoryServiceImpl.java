@@ -87,12 +87,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *  @CacheEvict:失效模式
      *  1、同时进行多种缓存操作 Caching
      *  2、指定删除某个分区下的所有数据
+     *  3、存储同一类型的数据，都可以指定成同一个分区。分区名默认就是缓存的前缀
+     *
      * @param category
      */
     /*@Caching(evict = {
             @CacheEvict(value = "category",key = "'getLevel1Categorys'"),
             @CacheEvict(value = "category",key = "'getCatalogJson'")
     })*/
+    //category:key
     @CacheEvict(value = "category",allEntries = true)
     @Transactional
     @Override
