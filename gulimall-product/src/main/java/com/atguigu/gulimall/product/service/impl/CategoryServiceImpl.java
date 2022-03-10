@@ -18,6 +18,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -83,10 +84,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 级联更新所有关联的数据
-     *
+     *  @CacheEvict:失效模式
+     *  1、同时进行多种缓存操作 Caching
      * @param category
      */
-    @CacheEvict(value = "category",key = "'getLevel1Categorys'")
+    @Caching(evict = {
+            @CacheEvict(value = "category",key = "'getLevel1Categorys'"),
+            @CacheEvict(value = "category",key = "'getCatalogJson'")
+    })
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
