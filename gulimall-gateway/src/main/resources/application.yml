@@ -62,6 +62,5 @@ spring:
           uri: lb://gulimall-search
           predicates:
             - Host=search.mall.com
-
   application:
     name: gulimall-gateway
