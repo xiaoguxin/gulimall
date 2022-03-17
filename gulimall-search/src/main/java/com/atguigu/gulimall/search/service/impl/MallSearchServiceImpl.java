@@ -28,6 +28,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,7 +183,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         brand_agg.field("brandId").size(50);
         //品牌聚合的子聚合
         brand_agg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName")).size(1);
-        brand_agg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandName")).size(1);
+        brand_agg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg")).size(1);
         //TODO 1、聚合brand
         sourceBuilder.aggregation(brand_agg);
         //2、分类聚合 catalog_agg
@@ -196,9 +197,10 @@ public class MallSearchServiceImpl implements MallSearchService {
         //聚合出当前所有的attrId
         TermsAggregationBuilder attr_id_agg = AggregationBuilders.terms("attr_id_agg").field("attrs.attrId");
         //聚合分析出当前attr_id对应的名字
-        attr_agg.subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1));
+        attr_id_agg.subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1));
         //聚合分析出当前attr_id对应的所有可能的属性值attrValue
-        attr_agg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(1));
+        attr_id_agg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(1));
+        attr_agg.subAggregation(attr_id_agg);
         //TODO 3、聚合attr
         sourceBuilder.aggregation(attr_agg);
 
@@ -225,73 +227,88 @@ public class MallSearchServiceImpl implements MallSearchService {
             for (SearchHit hit:hits.getHits()){
                 String sourceAsString = hit.getSourceAsString();
                 SkuEsModel esModel = JSON.parseObject(sourceAsString, SkuEsModel.class);
+                if(!StringUtils.isEmpty(param.getKeyword())){
+                    HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
+                    String title = skuTitle.getFragments()[0].string();
+                    esModel.setSkuTitle(title);
+                }
                 esModels.add(esModel);
             }
         }
         result.setProducts(esModels);
 
         //2、当前所有商品涉及到的所有属性信息
-        List<SearchResult.AttrVo> attrVos = Lists.newArrayList();
+
         ParsedNested attr_agg = response.getAggregations().get("attr_agg");
         ParsedLongTerms attr_id_agg = attr_agg.getAggregations().get("attr_id_agg");
-        for(Terms.Bucket bucket:attr_id_agg.getBuckets()){
-            SearchResult.AttrVo attrVo = new SearchResult.AttrVo();
-            //1、得到属性的id
-            long attrId = bucket.getKeyAsNumber().longValue();
-            //2、得到属性的名字
-            String attrName = ((ParsedStringTerms)bucket.getAggregations().get("attr_name_agg")).getBuckets().get(0).getKeyAsString();
+        if(attr_id_agg!=null){
+            List<SearchResult.AttrVo> attrVos = Lists.newArrayList();
+            List<? extends Terms.Bucket> attrBuckets = attr_id_agg.getBuckets();
+            for(Terms.Bucket bucket:attrBuckets){
+                SearchResult.AttrVo attrVo = new SearchResult.AttrVo();
+                //1、得到属性的id
+                long attrId = bucket.getKeyAsNumber().longValue();
+                //2、得到属性的名字
+                String attrName = ((ParsedStringTerms)bucket.getAggregations().get("attr_name_agg")).getBuckets().get(0).getKeyAsString();
 
-            //3、得到属性的所有值
-            List<String> attrValues = ((ParsedStringTerms) bucket.getAggregations().get("attr_value_agg")).getBuckets().stream().map(item -> {
-                String keyAsString = ((Terms.Bucket) item).getKeyAsString();
-                return keyAsString;
-            }).collect(Collectors.toList());
+                //3、得到属性的所有值
+                List<String> attrValues = ((ParsedStringTerms) bucket.getAggregations().get("attr_value_agg")).getBuckets().stream().map(item -> {
+                    String keyAsString = ((Terms.Bucket) item).getKeyAsString();
+                    return keyAsString;
+                }).collect(Collectors.toList());
 
-            attrVo.setAttrId(attrId);
-            attrVo.setAttrName(attrName);
-            attrVo.setAttrValue(attrValues);
-            attrVos.add(attrVo);
+                attrVo.setAttrId(attrId);
+                attrVo.setAttrName(attrName);
+                attrVo.setAttrValue(attrValues);
+                attrVos.add(attrVo);
+            }
+            result.setAttrs(attrVos);
+
         }
-        result.setAttrs(attrVos);
         //3、当前所有商品涉及到的所有品牌信息
         ParsedLongTerms brand_agg = response.getAggregations().get("brand_agg");
+        if(brand_agg!=null){
+            List<SearchResult.BrandVo> brandVos = Lists.newArrayList();
+            List<? extends Terms.Bucket> brandBuckets = brand_agg.getBuckets();
+            for(Terms.Bucket bucket:brandBuckets){
+                SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
+                //1、得到品牌id
+                long brandId = bucket.getKeyAsNumber().longValue();
+                brandVo.setBrandId(brandId);
 
-        List<SearchResult.BrandVo> brandVos = Lists.newArrayList();
-        for(Terms.Bucket bucket:brand_agg.getBuckets()){
-            SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
-            //1、得到品牌id
-            long brandId = bucket.getKeyAsNumber().longValue();
-            brandVo.setBrandId(brandId);
+                //2、得到品牌名
+                String brandName = ((ParsedStringTerms)bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
+                brandVo.setBrandName(brandName);
 
-            //2、得到品牌名
-            String brandName = ((ParsedStringTerms)bucket.getAggregations().get("brand_name_agg")).getBuckets().get(0).getKeyAsString();
-            brandVo.setBrandName(brandName);
-
-            //3、得到品牌的图片
-            String brandImg = ((ParsedStringTerms)bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
-            brandVo.setBrandImg(brandImg);
-            brandVos.add(brandVo);
+                //3、得到品牌的图片
+                String brandImg = ((ParsedStringTerms)bucket.getAggregations().get("brand_img_agg")).getBuckets().get(0).getKeyAsString();
+                brandVo.setBrandImg(brandImg);
+                brandVos.add(brandVo);
+            }
+            result.setBrands(brandVos);
         }
-        result.setBrands(brandVos);
+
 
         //4、当前所有商品涉及到的所有分类信息
         ParsedLongTerms catalog_agg = response.getAggregations().get("catalog_agg");
+        if(catalog_agg!=null){
+            List<SearchResult.CatalogVo> catalogVos = Lists.newArrayList();
+            List<? extends Terms.Bucket> catalogBuckets = catalog_agg.getBuckets();
+            for(Terms.Bucket bucket:catalogBuckets){
+                SearchResult.CatalogVo catalogVo = new SearchResult.CatalogVo();
+                //得到分类id
+                String keyAsString = bucket.getKeyAsString();
+                catalogVo.setCatalogId(Long.parseLong(keyAsString));
 
-        List<SearchResult.CatalogVo> catalogVos = Lists.newArrayList();
-        List<? extends Terms.Bucket> buckets = catalog_agg.getBuckets();
-        for(Terms.Bucket bucket:buckets){
-            SearchResult.CatalogVo catalogVo = new SearchResult.CatalogVo();
-            //得到分类id
-            String keyAsString = bucket.getKeyAsString();
-            catalogVo.setCatalogId(Long.parseLong(keyAsString));
-
-            //得到分类名
-            ParsedLongTerms catalog_name_agg = bucket.getAggregations().get("catalog_name_agg");
-            String catalog_name = catalog_name_agg.getBuckets().get(0).getKeyAsString();
-            catalogVo.setCatalogName(catalog_name);
-            catalogVos.add(catalogVo);
+                //得到分类名
+                ParsedStringTerms catalog_name_agg = bucket.getAggregations().get("catalog_name_agg");
+                String catalog_name = catalog_name_agg.getBuckets().get(0).getKeyAsString();
+                catalogVo.setCatalogName(catalog_name);
+                catalogVos.add(catalogVo);
+            }
+            result.setCatalogs(catalogVos);
         }
-        result.setCatalogs(catalogVos);
+
 
         //===========以上从聚合信息中获取===========
 
