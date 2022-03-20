@@ -1202,7 +1202,7 @@
                                 <a class="page_a" th:attr="pn=${result.pageNum-1}" href="/static/search/#" th:if="${result.pageNum>1}">
                                     < 上一页
                                 </a>
-                                <a class="page_a" th:attr="pn=${nav}" href="/static/search/#" style="border: 0;color:#ee2222;background: #fff"
+                                <a class="page_a" th:attr="pn=${nav},style=${nav == result.pageNum?'border: 0;color:#ee2222;background: #fff':''}" href="/static/search/#"
                                     th:each="nav:${result.pageNavs}">[[${nav}]]</a>
                                 <a class="page_a" th:attr="pn=${result.pageNum+1}" href="/static/search/#" th:if="${result.pageNum<result.totalPages}">
                                     下一页 >
