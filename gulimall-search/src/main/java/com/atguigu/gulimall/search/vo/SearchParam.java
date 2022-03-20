@@ -32,7 +32,7 @@ public class SearchParam {
      * brandId=1
      * attrs=2_5寸：6寸
      */
-    private Integer hasStock = 1;//是否只显示有货
+    private Integer hasStock;//是否只显示有货
     private String skuPrice;//价格区间查询
     private List<Long> brandId;//按照品牌进行查询，可以多选
     private List<String> attrs;//按照属性进行筛选
