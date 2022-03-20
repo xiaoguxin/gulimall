@@ -182,16 +182,15 @@ public class MallSearchServiceImpl implements MallSearchService {
          * 聚合分析
          */
         //1、品牌聚合
-        TermsAggregationBuilder brand_agg = AggregationBuilders.terms("brand_agg");
-        brand_agg.field("brandId").size(50);
+        TermsAggregationBuilder brand_agg = AggregationBuilders.terms("brand_agg").field("brandId");
         //品牌聚合的子聚合
-        brand_agg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName")).size(1);
-        brand_agg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg")).size(1);
+        brand_agg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName").size(1));
+        brand_agg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg").size(1));
         //TODO 1、聚合brand
         sourceBuilder.aggregation(brand_agg);
         //2、分类聚合 catalog_agg
-        TermsAggregationBuilder catalog_agg = AggregationBuilders.terms("catalog_agg").field("catalogId").size(20);
-        catalog_agg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName")).size(1);
+        TermsAggregationBuilder catalog_agg = AggregationBuilders.terms("catalog_agg").field("catalogId");
+        catalog_agg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName").size(1));
         //TODO 2、聚合catalog
         sourceBuilder.aggregation(catalog_agg);
         //3、属性聚合 attr_agg

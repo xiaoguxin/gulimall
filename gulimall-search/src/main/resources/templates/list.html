@@ -777,23 +777,20 @@
             </div>
             <div class="JD_nav_logo">
                 <!--品牌-->
-                <div class="JD_nav_wrap">
+                <div class="JD_pre">
                     <div class="sl_key">
                         <span><b>品牌：</b></span>
                     </div>
                     <div class="sl_value">
-                        <div class="sl_value_logo">
-                            <ul>
-                                <li th:each="brand:${result.brands}">
-                                    <a href="/static/search/#" th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+')'}">
-                                        <img th:src="${brand.brandImg}" height="58px" width="152px" alt="">
-                                        <div th:text="${brand.brandName}" height="58px" width="152px">
-                                            华为(HUAWEI)
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <ul>
+                            <li th:each="brand:${result.brands}">
+                                <a href="/static/search/#" th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+')'}">
+                                    <div th:text="${brand.brandName}">
+                                        华为(HUAWEI)
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                     <div class="sl_ext">
                         <a href="/static/search/#">
