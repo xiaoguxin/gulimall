@@ -813,7 +813,9 @@
                     <div class="sl_value">
                         <ul>
                             <li th:each="catalog:${result.catalogs}">
-                                <a href="/static/search/#" th:text="${catalog.catalogName}">手机</a>
+                                <a href="/static/search/#"
+                                   th:href="${'javascript:searchProducts(&quot;catalog3Id&quot;,'+catalog.catalogId+')'}"
+                                   th:text="${catalog.catalogName}">手机</a>
                             </li>
                         </ul>
                     </div>
@@ -837,7 +839,11 @@
                     </div>
                     <div class="sl_value">
                         <ul>
-                            <li th:each="val:${attr.attrValue}"><a href="/static/search/#" th:text="${val}">5.56英寸及以上</a></li>
+                            <li th:each="val:${attr.attrValue}">
+                                <a href="/static/search/#"
+                                   th:href="${'javascript:searchProducts(&quot;attrs&quot;,&quot;'+attr.attrId+'_'+val+'&quot;)'}"
+                                   th:text="${val}">5.56英寸及以上</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1956,7 +1962,13 @@
 
     function searchProducts(name,value) {
         //原来的页面
-        location.href = location.href + "&"+name+"="+value;
+        var href = location.href +"";
+        if(href.indexOf("?")!=-1){
+            location.href = location.href + "&"+name+"="+value;
+        }else{
+            location.href = location.href + "?"+name+"="+value;
+        }
+
     }
 </script>
 </body>

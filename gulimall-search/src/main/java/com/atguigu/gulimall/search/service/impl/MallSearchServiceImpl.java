@@ -106,7 +106,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 nestedboolQuery.must(QueryBuilders.termQuery("attrs.attrId",attrId));
                 nestedboolQuery.must(QueryBuilders.termsQuery("attrs.attrValue",attrValues));
                 //每一个必须都得生成一个nested查询
-                NestedQueryBuilder nestedQuery = QueryBuilders.nestedQuery("sttrs",nestedboolQuery, ScoreMode.None);
+                NestedQueryBuilder nestedQuery = QueryBuilders.nestedQuery("attrs",nestedboolQuery, ScoreMode.None);
                 boolQuery.filter(nestedQuery);
             }
 
