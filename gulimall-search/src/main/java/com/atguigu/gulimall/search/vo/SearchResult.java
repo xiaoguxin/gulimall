@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.search.vo;
 
 import com.atguigu.common.to.es.SkuEsModel;
+import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.List;
@@ -23,7 +24,21 @@ public class SearchResult {
     private List<CatalogVo> catalogs;//当前查询到的结果，所有涉及到的所有分类
     private List<AttrVo> attrs;//当前查询到的结果，所有涉及到的所有属性
 
+    private List<NavVo> navs = Lists.newArrayList();
+    private List<Long> attrIds = Lists.newArrayList();
+
+
     //===============以上是返回给页面的所有信息======================
+
+    /**
+     *面包屑导航静态内部类
+     */
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 
     @Data
     public static class BrandVo{
