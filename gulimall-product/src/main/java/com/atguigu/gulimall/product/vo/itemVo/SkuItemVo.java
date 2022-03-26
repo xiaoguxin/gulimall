@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.product.vo;
+package com.atguigu.gulimall.product.vo.itemVo;
 
 import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SkuInfoEntity;
@@ -24,23 +24,4 @@ public class SkuItemVo {
 
     //5、获取spu的规格参数信息
     List<SpuItemAttrGroupVo> groupAttrs;
-
-    @Data
-    public static class SkuItemSaleAttrVo{
-        private Long attrId;
-        private String attrName;
-        private List<String> attrValues;
-    }
-
-    @Data
-    public static class SpuItemAttrGroupVo{
-        private String groupName;
-        private List<SpuBaseAttrVo> atts;
-    }
-
-    @Data
-    public static class SpuBaseAttrVo{
-        private String attrName;
-        private List<String> attrValues;
-    }
 }
