@@ -6,10 +6,8 @@ import com.atguigu.gulimall.product.dao.SkuInfoDao;
 import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SkuInfoEntity;
 import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
-import com.atguigu.gulimall.product.service.AttrGroupService;
-import com.atguigu.gulimall.product.service.SkuImagesService;
-import com.atguigu.gulimall.product.service.SkuInfoService;
-import com.atguigu.gulimall.product.service.SpuInfoDescService;
+import com.atguigu.gulimall.product.service.*;
+import com.atguigu.gulimall.product.vo.itemVo.SkuItemSaleAttrVo;
 import com.atguigu.gulimall.product.vo.itemVo.SkuItemVo;
 import com.atguigu.gulimall.product.vo.itemVo.SpuItemAttrGroupVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -35,6 +33,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     AttrGroupService attrGroupService;
+
+    @Autowired
+    SkuSaleAttrValueService skuSaleAttrValueService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -131,6 +132,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         skuItemVo.setImages(images);
 
         //3、获取spu的销售属性组合
+        List<SkuItemSaleAttrVo> saleAttrVos = skuSaleAttrValueService.getSaleAttrsBySpuId(spuId);
+        skuItemVo.setSaleAttr(saleAttrVos);
 
         //4、获取spu的介绍
         SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(spuId);
@@ -139,7 +142,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         //5、获取spu的规格参数信息
         List<SpuItemAttrGroupVo> attrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId,catalogId);
         skuItemVo.setGroupAttrs(attrGroupVos);
-        return null;
+        return skuItemVo;
     }
 
 }
