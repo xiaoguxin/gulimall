@@ -5005,7 +5005,7 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 			<div class="desc">欢迎注册</div>
 			<div class="dfg">
 				<span>已有账号？</span>
-				<a href="/static/reg/">请登录</a>
+				<a href="http://auth.mall.com/login.html">请登录</a>
 			</div>
 		</header>
 		<section>
@@ -5045,9 +5045,9 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 				</div>
 				<div class="register-box">
 					<label for="username" class="other_label">验 证 码
-			<input maxlength="20" type="text" placeholder="请输入验证码" class="caa">
-			</label>
-					<span id="code"></span>
+						<input maxlength="20" type="text" placeholder="请输入验证码" class="caa">
+					</label>
+					<span id="sendCode">发送验证码</span>
 					<div class="tips">
 
 					</div>
@@ -5302,6 +5302,35 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 			$(".cuo").click(function() {
 				$(".zong").hide();
 			});
+
+			$(function(){
+                $("#sendCode").click(function () {
+                    //1.给指定手机号发送验证码
+                    //2.倒计时效果
+                    if($(this).hasClass("disabled")){
+						//正在倒计时
+                    }else{
+                        //给指定手机发送验证码
+                        timeoutChangeStyle();
+                    }
+                });
+			});
+            var num = 10;
+            function timeoutChangeStyle() {
+                $("#sendCode").attr("class","disabled");
+                if (num == 0) {
+                    $("#sendCode").text("发送验证码");
+                    num = 10;
+                    $("#sendCode").attr("class","");
+                } else {
+                    var str = num + "秒后再次发送";
+                    $("#sendCode").text(str);
+                    setTimeout("timeoutChangeStyle()", 1000);
+                }
+                num--;
+            }
+
+
 		</script>
 	</body>
 
