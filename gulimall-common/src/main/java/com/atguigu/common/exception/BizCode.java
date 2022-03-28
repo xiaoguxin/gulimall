@@ -8,6 +8,8 @@ package com.atguigu.common.exception;
  * 错误码列表：
  *  10: 通用
  *      001：参数格式校验
+ *      002: 手机号码格式有误
+ *      003: 短信验证码频率太高
  *  11: 商品
  *  12: 订单
  *  13: 购物车
@@ -20,6 +22,10 @@ public enum BizCode {
     UNKNOW_EXCEPTION(10000, "系统未知异常"),
 
     VAILD_EXCEPTION(10001, "参数格式校验失败"),
+
+    SMS_PHONE_FORMAT(10002,"手机号码格式有误"),
+
+    SMS_CODE_EXCEPTION(10003,"验证码频率太高，稍后再试"),
 
     PRODUCT_UP_EXCEPTION(10002,"商品上架异常");
 

@@ -22,7 +22,7 @@ public class SmsSendController {
      * @param code
      * @return
      */
-    @GetMapping
+    @GetMapping("/sendcode")
     public R sendCode(@RequestParam("phone") String phone, @RequestParam("code") String code){
         String  jsonCode  = "{'code':'"+code+"'}";
         DysmsUtil.sendMsg(phone,DysmsUtil.getMsgCode(),jsonCode);
