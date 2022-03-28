@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.auth.util;
+package com.atguigu.gulimall.thirdparty.util;
 import com.aliyun.dysmsapi20170525.Client;
 import com.aliyun.dysmsapi20170525.models.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 /**
  * @Auther: MR.rp
@@ -54,7 +53,7 @@ public  class DysmsUtil {
             log.warn("============ 手机号:"+phoneNums+"不合法,发送失败 ======");
             return;
         }
-    SendSmsRequest sendSmsRequest = new SendSmsRequest()
+     SendSmsRequest sendSmsRequest = new SendSmsRequest()
             .setPhoneNumbers(phoneNums)
             .setSignName(signName)  //短信签名名称
             .setTemplateCode(templateCode) //短信模板ID

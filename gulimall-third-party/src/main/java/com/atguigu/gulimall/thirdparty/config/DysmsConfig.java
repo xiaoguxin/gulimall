@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.auth.config;
+package com.atguigu.gulimall.thirdparty.config;
 
 import com.aliyun.teaopenapi.models.Config;
 import org.springframework.beans.factory.annotation.Value;

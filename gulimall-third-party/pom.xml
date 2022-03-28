@@ -44,6 +44,18 @@
             <scope>test</scope>
         </dependency>
 
+        <!--短信-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>tea-openapi</artifactId>
+            <version>0.0.19</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dysmsapi20170525</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+
         <!-- Aliyun OSS Spring Boot Starter -->
         <!--<dependency>
             <groupId>com.alibaba.cloud</groupId>
