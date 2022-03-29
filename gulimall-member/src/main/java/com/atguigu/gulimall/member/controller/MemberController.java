@@ -5,6 +5,7 @@ import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.member.entity.MemberEntity;
 import com.atguigu.gulimall.member.feign.CouponFeignService;
 import com.atguigu.gulimall.member.service.MemberService;
+import com.atguigu.gulimall.member.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,16 @@ public class MemberController {
         R memberCoupons=couponFeignService.memberCoupons();
 
         return R.ok().put("member",memberEntity).put("coupons",memberCoupons.get("coupons"));
+    }
+
+    @PostMapping("/regist")
+    public  R regist(@RequestBody MemberRegistVo vo){
+        try {
+            memberService.regist(vo);
+        }catch (Exception e){
+        }
+
+        return R.ok();
     }
 
     /**

@@ -99,6 +99,30 @@ public class LoginController {
         }
 
         //真正注册。调用远程服务进行注册
+        //1、校验验证码
+        String code = vo.getCode();
+        String s = redisTemplate.opsForValue().get(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+        if(StringUtils.isNotBlank(s)){
+            if(code.equals(s.split("_")[0])){
+                //删除验证码;令牌机制
+                redisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+
+                //验证码通过     //真正注册。调用远程服务进行注册
+            }else{
+                Map<String,String> errors = new HashMap<>();
+                errors.put("code","验证码错误");
+                redirectAttributes.addFlashAttribute("errors",errors);
+                //校验出错，转发到注册页
+                return "redirect:http://auth.mall.com/reg.html";
+            }
+        }else{
+            Map<String,String> errors = new HashMap<>();
+            errors.put("code","验证码错误");
+            redirectAttributes.addFlashAttribute("errors",errors);
+            //校验出错，转发到注册页
+            return "redirect:http://auth.mall.com/reg.html";
+        }
+
 
         //注册成功回到首页，回到登录页
         return "redirect:/login.html";
