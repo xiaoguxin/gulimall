@@ -1,9 +1,11 @@
 package com.atguigu.gulimall.auth.controller;
 
 
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.exception.BizCode;
 import com.atguigu.common.utils.R;
+import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartFeignService;
 import com.atguigu.gulimall.auth.vo.UserRegistVo;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +36,9 @@ public class LoginController {
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    MemberFeignService memberFeignService;
 
     @ResponseBody
     @GetMapping("/sms/sendcode")
@@ -108,6 +111,17 @@ public class LoginController {
                 redisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
 
                 //验证码通过     //真正注册。调用远程服务进行注册
+                R r = memberFeignService.regist(vo);
+                if(r.getCode() == 0){
+                    //注册成功回到首页，回到登录页
+                    return "redirect:http://auth.mall.com/login.html";
+                }else{
+                    Map<String,String> errors = new HashMap<>();
+                    errors.put("msg",r.getData(new TypeReference<String>(){}));
+                    redirectAttributes.addFlashAttribute("errors",errors);
+                    return "redirect:http://auth.mall.com/reg.html";
+                }
+
             }else{
                 Map<String,String> errors = new HashMap<>();
                 errors.put("code","验证码错误");
@@ -122,10 +136,6 @@ public class LoginController {
             //校验出错，转发到注册页
             return "redirect:http://auth.mall.com/reg.html";
         }
-
-
-        //注册成功回到首页，回到登录页
-        return "redirect:/login.html";
     }
 
 }

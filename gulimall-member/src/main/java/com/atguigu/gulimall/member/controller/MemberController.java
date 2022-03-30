@@ -1,8 +1,11 @@
 package com.atguigu.gulimall.member.controller;
 
+import com.atguigu.common.exception.BizCode;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.member.entity.MemberEntity;
+import com.atguigu.gulimall.member.exception.PhoneExsitException;
+import com.atguigu.gulimall.member.exception.UsernameExistException;
 import com.atguigu.gulimall.member.feign.CouponFeignService;
 import com.atguigu.gulimall.member.service.MemberService;
 import com.atguigu.gulimall.member.vo.MemberRegistVo;
@@ -43,7 +46,10 @@ public class MemberController {
     public  R regist(@RequestBody MemberRegistVo vo){
         try {
             memberService.regist(vo);
-        }catch (Exception e){
+        }catch (PhoneExsitException e){
+            return R.error(BizCode.PHONE_EXIST_EXCEPTION.getCode(),BizCode.PHONE_EXIST_EXCEPTION.getMsg());
+        }catch (UsernameExistException e){
+            return R.error(BizCode.USER_EXIST_EXCEPTION.getCode(),BizCode.USER_EXIST_EXCEPTION.getMsg());
         }
 
         return R.ok();

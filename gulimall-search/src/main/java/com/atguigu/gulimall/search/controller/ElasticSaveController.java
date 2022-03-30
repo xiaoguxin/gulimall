@@ -29,14 +29,14 @@ public class ElasticSaveController {
             b = productSaveService.productStatusUp(skuEsModels);
         }catch (Exception e){
             log.error("ElasticSaveController商品上架错误:{}",e);
-            return R.error(BizCode.VAILD_EXCEPTION.getCode(),BizCode.VAILD_EXCEPTION.getMsg());
+            return R.error(BizCode.PRODUCT_UP_EXCEPTION.getCode(),BizCode.PRODUCT_UP_EXCEPTION.getMsg());
         }
 
         if(b){
             //成功
             return R.ok();
         }else{
-            return R.error(BizCode.VAILD_EXCEPTION.getCode(),BizCode.VAILD_EXCEPTION.getMsg());
+            return R.error(BizCode.PRODUCT_UP_EXCEPTION.getCode(),BizCode.PRODUCT_UP_EXCEPTION.getMsg());
         }
 
     }
