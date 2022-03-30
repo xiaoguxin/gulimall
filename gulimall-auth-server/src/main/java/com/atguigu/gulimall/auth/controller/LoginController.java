@@ -7,6 +7,7 @@ import com.atguigu.common.exception.BizCode;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartFeignService;
+import com.atguigu.gulimall.auth.vo.UserLoginVo;
 import com.atguigu.gulimall.auth.vo.UserRegistVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +119,7 @@ public class LoginController {
                     return "redirect:http://auth.mall.com/login.html";
                 }else{
                     Map<String,String> errors = new HashMap<>();
-                    errors.put("msg",r.getData(new TypeReference<String>(){}));
+                    errors.put("msg",r.getData2("msg",new TypeReference<String>(){}));
                     redirectAttributes.addFlashAttribute("errors",errors);
                     return "redirect:http://auth.mall.com/reg.html";
                 }
@@ -135,6 +137,22 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("errors",errors);
             //校验出错，转发到注册页
             return "redirect:http://auth.mall.com/reg.html";
+        }
+    }
+
+    @PostMapping("/login")
+    //前端传来k,v参数不需要加@RequestBody
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session) {
+        //远程登录
+        R r = memberFeignService.login(vo);
+        if (r.getCode() == 0) {
+
+            return "redirect:http://mall.com";
+        } else {
+            Map<String,String>  errors = new HashMap<>();
+            errors.put("msg",r.getData2("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors",errors);
+            return "redirect:http://auth.mall.com/login.html";
         }
     }
 
