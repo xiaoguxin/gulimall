@@ -36,6 +36,12 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <!--1、整合SpringSession完成session共享问题-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
+
         <!--整合redis-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
