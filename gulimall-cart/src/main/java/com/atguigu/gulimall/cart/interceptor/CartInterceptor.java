@@ -62,7 +62,7 @@ public class CartInterceptor implements HandlerInterceptor {
         }
         //目标方法执行之前
         threadLocal.set(userInfoTo);
-        return false;
+        return true;
     }
 
     /**
