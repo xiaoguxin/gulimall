@@ -10,6 +10,7 @@ public class CartItem {
     private Long skuId;
     private Boolean check = true;
     private String title;
+    private String image;
     private List<String> skuAttr;
     private BigDecimal price;
     private Integer count;
@@ -37,6 +38,14 @@ public class CartItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public List<String> getSkuAttr() {
