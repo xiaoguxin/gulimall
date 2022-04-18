@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.member.controller;
 
 import com.atguigu.common.exception.BizCode;
+import com.atguigu.common.to.SocialUser;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.member.entity.MemberEntity;
@@ -13,6 +14,7 @@ import com.atguigu.gulimall.member.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -33,6 +35,17 @@ public class MemberController {
 
     @Autowired
     CouponFeignService couponFeignService;
+
+
+    @PostMapping("/oauth2/login")
+    public R oauthLogin(@RequestBody SocialUser socialUser) throws Exception {
+        MemberEntity memberEntity = memberService.socialLogin(socialUser);
+        if (memberEntity != null) {
+            return R.ok().setData(memberEntity);
+        } else {
+            return R.error(BizCode.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCode.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
+    }
 
     @RequestMapping("/coupons")
     public R test(){
