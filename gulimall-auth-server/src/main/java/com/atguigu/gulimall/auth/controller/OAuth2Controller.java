@@ -54,11 +54,11 @@ public class OAuth2Controller {
                 });
                 System.out.println("登录成功"+data);
                 log.info("登录成功:用户:{}",data.toString());
-                /*//登录成功调回首页
+                //登录成功调回首页
                 //第一次使用session,命令浏览器保存卡号,JsessionId的cookie
                 //子域之间，发卡的时候(指定域名为父域名),即使是子域发卡,父域也可使用
                 session.setAttribute("loginUser",data);
-                servletResponse.addCookie(new Cookie("JSESSIONID","data"));*/
+                servletResponse.addCookie(new Cookie("JSESSIONID","data"));
                 return "redirect:http://mall.com";
             } else {
                 return "redirect:http://auth.mall.com/login.html";

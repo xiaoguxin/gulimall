@@ -45,6 +45,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--整合springSession完成session共享问题-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
         <!--热部署：devtools-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
