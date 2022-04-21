@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.exception.BizCode;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartFeignService;
 import com.atguigu.gulimall.auth.vo.UserLoginVo;
@@ -140,17 +141,31 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/login.html")
+     public String loginPage(HttpSession session){
+        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
+        if(attribute == null){
+            //没登录
+            return "login";
+        }else{
+            return "redirect:http://mall.com";
+        }
+    }
+
     @PostMapping("/login")
     //前端传来k,v参数不需要加@RequestBody
     public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session) {
         //远程登录
-        R r = memberFeignService.login(vo);
-        if (r.getCode() == 0) {
-
+        R login = memberFeignService.login(vo);
+        if (login.getCode() == 0) {
+            //成功
+            MemberRespVo data = login.getData2("data", new TypeReference<MemberRespVo>() {
+            });
+            session.setAttribute(AuthServerConstant.LOGIN_USER,data);
             return "redirect:http://mall.com";
         } else {
             Map<String,String>  errors = new HashMap<>();
-            errors.put("msg",r.getData2("msg",new TypeReference<String>(){}));
+            errors.put("msg",login.getData2("msg",new TypeReference<String>(){}));
             redirectAttributes.addFlashAttribute("errors",errors);
             return "redirect:http://auth.mall.com/login.html";
         }
