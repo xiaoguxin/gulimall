@@ -23,8 +23,14 @@
 
 					</ul>
 					<ul class="header-right">
-						<li><a href="../登录页面\index.html" style="color: red;">你好，请登录</a></li>
-						<li><a href="../注册页面\index.html">免费注册</a></li>
+						<li>
+							<a th:if="${session.loginUser!=null}">欢迎:
+								[[${session.loginUser==null?'':session.loginUser.nickname}]]</a>
+							<a href="http://auth.mall.com/login.html" th:if="${session.loginUser==null}">欢迎,请登录:</a>
+						</li>
+						<li>
+							<a href="http://auth.mall.com/reg.html" class="li_2" th:if="${session.loginUser==null}">免费注册</a>
+						</li>
 						<li class="spacer"></li>
 						<li><a href="">我的订单</a></li>
 						<li class="spacer"></li>
@@ -246,15 +252,15 @@
 	<script src="/static/cart//js/index.js" charset="utf-8"></script>
 	<script type="text/javascript">
 		function toTrade() {
-			window.location.href = "http://cart.gmall.com:8087/toTrade";
+			window.location.href = "http://cart.mall.com:8087/toTrade";
 		}
 
 		function toItem(skuId) {
-			window.location.href = "http://item.gmall.com:8084/" + skuId + ".html";
+			window.location.href = "http://item.mall.com:8084/" + skuId + ".html";
 		}
 
 		function login() {
-			var s = encodeURIComponent("http://cart.gmall.com:8087/cartList");
+			var s = encodeURIComponent("http://cart.mall.com:8087/cartList");
 			window.location.href = "http://passport.atguigu.com/index?originUrl=" + s;
 		}
 

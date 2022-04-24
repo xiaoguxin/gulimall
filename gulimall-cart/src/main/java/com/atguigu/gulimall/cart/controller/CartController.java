@@ -4,6 +4,7 @@ import com.atguigu.gulimall.cart.interceptor.CartInterceptor;
 import com.atguigu.gulimall.cart.service.CartService;
 import com.atguigu.gulimall.cart.vo.CartItem;
 import com.atguigu.gulimall.cart.vo.UserInfoTo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 @Controller
 public class CartController {
 
+    @Autowired
     CartService cartService;
 
     /**
@@ -48,7 +50,7 @@ public class CartController {
 
           CartItem cartItem = cartService.addToCart(skuId,num);
 
-          model.addAttribute("item",cartItem);
+          model.addAttribute("items",cartItem);
 
         return "success";
     }
