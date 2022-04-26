@@ -170,7 +170,7 @@
 				</dl>
 			</div>
 			<div>
-				<button type="button">删除</button>
+                <button type="button" onclick="deleteItem()">删除</button>
 
 			</div>
 		</div>
@@ -784,6 +784,14 @@
             //2.获取数量
             var num = $(this).parent().find(".countOpsNum").text();
             location.href = "http://cart.mall.com/countItem?skuId="+skuId+"&num="+num;
+        });
+
+        var deleteId = 0;
+        function deleteItem() {
+            location.href = "http://cart.mall.com/deleteItem?skuId="+deleteId;
+        }
+        $(".deleteItemBtn").click(function () {
+            deleteId = $(this).attr("skuId");
         });
 	</script>
 </html>
