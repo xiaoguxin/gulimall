@@ -771,5 +771,11 @@
 		}).mouseout(function() {
 			$(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
 		})
+
+        $(".itemcheck").click(function () {
+            var skuId = $(this).attr("skuId");
+            var check = $(this).prop("checked");
+            location.href = "http://cart.mall.com/checkItem?skuId="+skuId+"&check="+(check?1:0);
+        });
 	</script>
 </html>
