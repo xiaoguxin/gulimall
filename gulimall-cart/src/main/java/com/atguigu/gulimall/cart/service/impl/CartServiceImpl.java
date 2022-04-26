@@ -146,11 +146,7 @@ public class CartServiceImpl implements CartService {
         redisTemplate.delete(cartKey);
     }
 
-    /**
-     * 勾选购物项
-     * @param skuId
-     * @param check
-     */
+
     @Override
     public void checkItem(Long skuId, Integer check) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
@@ -158,6 +154,16 @@ public class CartServiceImpl implements CartService {
         cartItem.setCheck(check==1?true:false);
         String s = JSON.toJSONString(cartItem);
         cartOps.put(skuId.toString(),s);
+    }
+
+
+    @Override
+    public void changeItemCount(Long skuId, Integer num) {
+        CartItem cartItem = getCartItem(skuId);
+        cartItem.setCount(num);
+
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        cartOps.put(skuId.toString(),JSON.toJSONString(cartItem));
     }
 
     /**

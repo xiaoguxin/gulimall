@@ -777,5 +777,13 @@
             var check = $(this).prop("checked");
             location.href = "http://cart.mall.com/checkItem?skuId="+skuId+"&check="+(check?1:0);
         });
+
+        $(".countOpsBtn").click(function () {
+            //1.获取skuId
+            var skuId = $(this).parent().attr("skuId");
+            //2.获取数量
+            var num = $(this).parent().find(".countOpsNum").text();
+            location.href = "http://cart.mall.com/countItem?skuId="+skuId+"&num="+num;
+        });
 	</script>
 </html>

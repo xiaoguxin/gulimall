@@ -21,6 +21,15 @@ public class CartController {
     @Autowired
     CartService cartService;
 
+    @GetMapping("/countItem")
+    public String countItem(@RequestParam("skuId") Long skuId,
+                            @RequestParam("num") Integer num){
+
+        cartService.changeItemCount(skuId,num);
+
+        return "redirect:http://cart.mall.com/cart.html";
+    }
+
     @GetMapping("/checkItem")
     public String checkItem(@RequestParam("skuId") Long skuId,
                             @RequestParam("check") Integer check){
