@@ -26,17 +26,19 @@ class GulimallOrderApplicationTests {
 
     @Test
     void sendMessageTests() {
-        OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
-        reasonEntity.setId(1L);
-        reasonEntity.setCreateTime(new Date());
-        reasonEntity.setName("哈哈");
 
         //1、发送消息,如果发送的消息是个对象，我们会使用序列化机制，将对象写出去。对象必须实现Serializable
         String msg = "Hello World";
+        OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+        reasonEntity.setId(1L);
+        reasonEntity.setCreateTime(new Date());
 
         //2、发送的对象类型的消息，可以是一个json
-        rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",reasonEntity);
-        log.info("消息发送完成{}",reasonEntity);
+        for(int i=0;i<10;i++){
+            reasonEntity.setName("哈哈-"+i);
+            rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",reasonEntity);
+            log.info("消息发送完成{}",reasonEntity);
+        }
     }
 
     /**
