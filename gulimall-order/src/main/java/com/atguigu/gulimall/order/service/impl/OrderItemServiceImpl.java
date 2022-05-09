@@ -1,5 +1,7 @@
 package com.atguigu.gulimall.order.service.impl;
 
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,6 +26,20 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * queue:声明需要监听的所有队列
+     *
+     * org.springframework.amqp.core.Message
+     *
+     * 参考可以写一下类型
+     * @param message
+     */
+    @RabbitListener(queues = {"hello-java-queue"})
+    public void recieveMessage(Message message){
+        byte[] body = message.getBody();
+        System.out.println("接收到消息...内容："+message+"==>类型："+message.getClass());
     }
 
 }

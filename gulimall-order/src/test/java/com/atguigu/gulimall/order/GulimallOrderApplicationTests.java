@@ -36,7 +36,7 @@ class GulimallOrderApplicationTests {
 
         //2、发送的对象类型的消息，可以是一个json
         rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",reasonEntity);
-        log.info("消息发送完成{}",msg);
+        log.info("消息发送完成{}",reasonEntity);
     }
 
     /**

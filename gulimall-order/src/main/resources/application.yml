@@ -1,6 +1,6 @@
 #application.yml
 server:
-  port: 9000
+  port: 9010
 spring:
   datasource:
     username: root
