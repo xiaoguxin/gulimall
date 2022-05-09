@@ -1,8 +1,10 @@
 package com.atguigu.gulimall.order.service.impl;
 
+import com.atguigu.gulimall.order.entity.OrderEntity;
 import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import com.rabbitmq.client.Channel;
@@ -17,7 +19,7 @@ import com.atguigu.gulimall.order.dao.OrderItemDao;
 import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.service.OrderItemService;
 
-
+@RabbitListener(queues = {"hello-java-queue"})
 @Service("orderItemService")
 public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEntity> implements OrderItemService {
 
@@ -47,7 +49,8 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
      *      2）、只有一个消息完全处理完，方法运行结束，我们就可以接收到下一个消息
      * @param message
      */
-    @RabbitListener(queues = {"hello-java-queue"})
+    //RabbitListener(queues = {"hello-java-queue"})
+    @RabbitHandler
     public void recieveMessage(Message message,
                                OrderReturnReasonEntity content,
                                Channel channel) throws InterruptedException {
@@ -58,6 +61,12 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
         MessageProperties properties = message.getMessageProperties();
         Thread.sleep(3000);
         System.out.println("消息处理完成=》"+content.getName());
+    }
+
+    @RabbitHandler
+    public void recieveMessage2(OrderEntity content) {
+        //{"id":1,"name":"哈哈","sort":null,"status":null,"createTime":1652100907404}
+        System.out.println("接收到消息..."+content);
     }
 
 }
