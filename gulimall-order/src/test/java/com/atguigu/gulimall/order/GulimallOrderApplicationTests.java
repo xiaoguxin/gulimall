@@ -6,6 +6,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,6 +16,18 @@ class GulimallOrderApplicationTests {
 
     @Autowired
     AmqpAdmin amqpAdmin;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+
+    @Test
+    void sendMessageTests() {
+        //1、发送消息
+        String msg = "Hello World";
+        rabbitTemplate.convertAndSend("hello-java-exchange","hello.java","Hello World");
+        log.info("消息发送完成{}",msg);
+    }
 
     /**
      * 1、如何创建Exchange[hello.java.exchange]、Queue、Binding
