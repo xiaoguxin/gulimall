@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.order;
 
+import com.atguigu.gulimall.order.entity.OrderReturnReasonEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -9,6 +10,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Date;
 
 @SpringBootTest
 @Slf4j
@@ -23,9 +26,16 @@ class GulimallOrderApplicationTests {
 
     @Test
     void sendMessageTests() {
-        //1、发送消息
+        OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+        reasonEntity.setId(1L);
+        reasonEntity.setCreateTime(new Date());
+        reasonEntity.setName("哈哈");
+
+        //1、发送消息,如果发送的消息是个对象，我们会使用序列化机制，将对象写出去。对象必须实现Serializable
         String msg = "Hello World";
-        rabbitTemplate.convertAndSend("hello-java-exchange","hello.java","Hello World");
+
+        //2、发送的对象类型的消息，可以是一个json
+        rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",reasonEntity);
         log.info("消息发送完成{}",msg);
     }
 
