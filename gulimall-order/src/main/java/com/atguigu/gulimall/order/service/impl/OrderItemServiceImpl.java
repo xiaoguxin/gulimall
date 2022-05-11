@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import com.rabbitmq.client.Channel;
+
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -61,6 +62,26 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
         MessageProperties properties = message.getMessageProperties();
         Thread.sleep(3000);
         System.out.println("消息处理完成=》"+content.getName());
+        //Channel内按顺序自增
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+
+        //签收货物，非批量模式
+        try {
+
+            if(deliveryTag%2==0){
+                //收货
+                channel.basicAck(deliveryTag,false);
+                System.out.println("签收了货物..."+deliveryTag);
+            }else {
+                //退货 requeue=false 丢弃 requeue=true 发回服务器，服务器重新入队
+                //deliveryTag, multiple, requeue(false不再入队)
+                channel.basicNack(deliveryTag,false,false);
+                System.out.println("没有签收了货物..."+deliveryTag);
+            }
+        } catch (Exception e) {
+            //网络中断
+
+        }
     }
 
     @RabbitHandler
