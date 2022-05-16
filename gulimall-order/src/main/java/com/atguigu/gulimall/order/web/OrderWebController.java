@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class OrderWebController {
@@ -17,7 +18,7 @@ public class OrderWebController {
 
 
     @GetMapping("/toTrade")
-    public String toTrade(Model model, HttpServletRequest request){
+    public String toTrade(Model model, HttpServletRequest request) throws ExecutionException, InterruptedException {
         OrderConfirmVo confirmVo = orderService.confirmOrder();
 
         model.addAttribute("orderConfirmData",confirmVo);
