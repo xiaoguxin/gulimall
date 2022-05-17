@@ -14,4 +14,9 @@ public class OrderItemVo {
     private BigDecimal price;
     private Integer count;
     private BigDecimal totalPrice;
+
+    //TODO  查询库存状态
+    //private boolean hasStock;
+
+    private BigDecimal weight;
 }
