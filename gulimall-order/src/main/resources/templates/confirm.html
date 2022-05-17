@@ -576,7 +576,7 @@
 				</p>
 				<p class="qian_y">
 					<span>运费： </span>
-					<span class="rmb"> &nbsp ￥0.00</span>
+					<span class="rmb"> &nbsp ￥<b id="fareEle"></b></span>
 				</p>
 				<p class="qian_y">
 					<span>服务费： </span>
@@ -590,7 +590,7 @@
 			</div>
 
 			<div class="yfze">
-				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥<b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}]]</span></p>
+				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥<b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirmData.payPrice,1,2)}]]</b></span></p>
 				<p class="yfze_b">寄送至：  收货人：</p>
 			</div>
 			<button class="tijiao">提交订单</button>
@@ -826,9 +826,33 @@
                 },function(){
                     $('.h-r-1').css('display','none')
                 })
+				highlight();
+                getFare($(".addr-item p[def='1']").attr("addrId"));
             })
 
+			function highlight() {
+                $(".addr-item p").css({"border": "2px solid gray"})
+                $(".addr-item p[def='1']").css({"border": "2px solid red"})
+            }
 
+            $(".addr-item p").click(function () {
+                $(".addr-item p").attr("def","0")
+				$(this).attr("def",1);
+                highlight();
+                //获取到当前的地址id
+				var addrId = $(this).attr("addrId");
+				//发送ajax获取运费信息
+				getFare(addrId);
+            });
+			
+			function getFare(addrId) {
+                $.get("http://mall.com/api/ware/wareinfo/fare?addrId="+addrId,function (data) {
+                    console.log(data);
+                    $("#fareEle").text(data.data);
+                    var total = [[${orderConfirmData.total}]]
+                    $("#payPriceEle").text(total*1 + data.data*1);
+                })
+            }
 		</script>
 	</body>
 
