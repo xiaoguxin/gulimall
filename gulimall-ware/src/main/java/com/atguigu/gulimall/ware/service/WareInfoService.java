@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.ware.service;
 
+import com.atguigu.gulimall.ware.vo.FareVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimall.ware.entity.WareInfoEntity;
@@ -23,6 +24,6 @@ public interface WareInfoService extends IService<WareInfoEntity> {
      * @param addrId
      * @return
      */
-    BigDecimal getFare(Long addrId);
+    FareVo getFare(Long addrId);
 }
 

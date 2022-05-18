@@ -3,6 +3,7 @@ package com.atguigu.gulimall.ware.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.MemberFeignService;
+import com.atguigu.gulimall.ware.vo.FareVo;
 import com.atguigu.gulimall.ware.vo.MemberAddressVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,9 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
     }
 
     @Override
-    public BigDecimal getFare(Long addrId) {
+    public FareVo getFare(Long addrId) {
 
+        FareVo fareVo = new FareVo();
         R r = memberFeignService.addrInfo(addrId);
         MemberAddressVo data = r.getData2("memberReceiveAddress",new TypeReference<MemberAddressVo>() {
         });
@@ -56,7 +58,10 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
             String phone = data.getPhone();
             //123456789 9
             String substring = phone.substring(phone.length() - 1, phone.length());
-            return new BigDecimal(substring);
+            BigDecimal bigDecimal = new BigDecimal(substring);
+            fareVo.setAddress(data);
+            fareVo.setFare(bigDecimal);
+            return fareVo;
         }
         return null;
     }
