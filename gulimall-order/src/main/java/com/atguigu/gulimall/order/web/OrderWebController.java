@@ -43,12 +43,11 @@ public class OrderWebController {
         System.out.println("订单提交的数据..."+vo);
         if(responseVo.getCode() == 0){
             //下单成功来到支付选择页
-            return
+            return null;
         }else{
             //下单失败回到订单确认页重新确认订单信息
             return "redirect:http://order.mall.com/toTrade";
         }
-        return null;
     }
 
 }
