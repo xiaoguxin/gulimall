@@ -3,17 +3,21 @@ package com.atguigu.gulimall.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
-import com.atguigu.gulimall.order.constant.OrderConstant;
+import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.feign.CartFeignService;
 import com.atguigu.gulimall.order.feign.MemberFeignService;
+import com.atguigu.gulimall.order.feign.ProductFeignService;
 import com.atguigu.gulimall.order.feign.WmsFeignService;
 import com.atguigu.gulimall.order.interceptor.LoginUserInterceptor;
+import com.atguigu.gulimall.order.to.OrderCreateTo;
 import com.atguigu.gulimall.order.vo.*;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.order.dao.OrderDao;
 import com.atguigu.gulimall.order.entity.OrderEntity;
 import com.atguigu.gulimall.order.service.OrderService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -42,8 +47,13 @@ import static com.atguigu.gulimall.order.constant.OrderConstant.USER_ORDER_TOKEN
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
+    private ThreadLocal<OrderSubmitVo> confirmVoThreadLocal = new ThreadLocal<>();
+
     @Autowired
     private MemberFeignService memberFeignService;
+
+    @Autowired
+    ProductFeignService productFeignService;
 
     @Autowired
     private CartFeignService cartFeignService;
@@ -134,7 +144,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
 
         MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
-
+        confirmVoThreadLocal.set(vo);
         //1、验证令牌是否合法【令牌的对比和删除必须保证原子性】
         //0令牌失败 - 1删除成功
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
@@ -152,8 +162,108 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         } else {
             //令牌验证成功
             //下单：去创建订单，验令牌，验价格，锁库存....
+            OrderCreateTo order = createOrder();
         }
         return responseVo;
     }
 
+
+    private OrderCreateTo createOrder(){
+        OrderCreateTo createTo = new OrderCreateTo();
+        //1、生成订单号
+        String orderSn = IdWorker.getTimeId();
+        //创建订单号
+        buildOrder(orderSn);
+
+        //2、获取到所有的订单项
+        List<OrderItemEntity> itemEntities = buildOrderItems(orderSn);
+
+        //3、验价
+
+        return  createTo;
+    }
+
+    private OrderEntity buildOrder(String orderSn) {
+        OrderEntity entity = new OrderEntity();
+        entity.setOrderSn(orderSn);
+
+
+        OrderSubmitVo submitVo = confirmVoThreadLocal.get();
+        //获取收货地址信息
+        R fare = wmsFeignService.getFare(submitVo.getAddrId());
+        FareVo fareResp = fare.getData(new TypeReference<FareVo>() {
+        });
+
+        entity.setFreightAmount(fareResp.getFare());
+        //设置收货人信息
+        entity.setReceiverCity(fareResp.getAddress().getCity());
+        entity.setReceiverDetailAddress(fareResp.getAddress().getDetailAddress());
+        entity.setReceiverName(fareResp.getAddress().getName());
+        entity.setReceiverPhone(fareResp.getAddress().getPhone());
+        entity.setReceiverPostCode(fareResp.getAddress().getPostCode());
+        entity.setReceiverProvince(fareResp.getAddress().getProvince());
+        entity.setReceiverRegion(fareResp.getAddress().getRegion());
+        return entity;
+    }
+
+    /**
+     * 构建所有订单项
+     * @param
+     * @return
+     */
+    private List<OrderItemEntity> buildOrderItems(String orderSn) {
+        //最后确定每一个购物项的价格
+        List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
+        if (currentUserCartItems!=null&& currentUserCartItems.size()>0){
+            List<OrderItemEntity> itemEntities = currentUserCartItems.stream().map(cartItem -> {
+                OrderItemEntity itemEntity = buildOrderItem(cartItem);
+                itemEntity.setOrderSn(orderSn);
+                return itemEntity;
+            }).collect(Collectors.toList());
+            return itemEntities;
+        }
+        return null;
+    }
+
+    /**
+     * 构建某一个订单项
+     * @param cartItem
+     * @return
+     */
+    private OrderItemEntity buildOrderItem(OrderItemVo cartItem){
+        OrderItemEntity itemEntity = new OrderItemEntity();
+
+        //1、订单信息：订单号
+
+        //2、商品的SPU信息
+        Long skuId = cartItem.getSkuId();
+        R r = productFeignService.getSpuInfoBySkuId(skuId);
+        SpuInfoVo data = r.getData(new TypeReference<SpuInfoVo>() {
+        });
+        itemEntity.setSpuId(data.getId());
+        itemEntity.setSpuBrand(data.getBrandId().toString());
+        itemEntity.setSpuName(data.getSpuName());
+        itemEntity.setCategoryId(data.getCatalogId());
+
+        //3、商品的sku信息
+        itemEntity.setSkuId(cartItem.getSkuId());
+        itemEntity.setSkuName(cartItem.getTitle());
+        itemEntity.setSkuPic(cartItem.getImage());
+        itemEntity.setSkuPrice(cartItem.getPrice());
+
+        //使用StringUtils.collectionToDelimitedString将list集合转换为String
+        String skuAttr = StringUtils.collectionToDelimitedString(cartItem.getSkuAttr(), ";");
+        itemEntity.setSkuAttrsVals(skuAttr);
+        itemEntity.setSkuQuantity(cartItem.getCount());
+
+
+        //4、商品的优惠信息[不做]
+
+        //5、积分信息
+        itemEntity.setGiftGrowth(cartItem.getPrice().multiply(new BigDecimal(cartItem.getCount())).intValue());
+        itemEntity.setGiftIntegration(cartItem.getPrice().multiply(new BigDecimal(cartItem.getCount())).intValue());
+
+
+        return itemEntity;
+    }
 }
