@@ -1,14 +1,13 @@
 package com.atguigu.gulimall.ware.service.impl;
 
+import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.Query;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.dao.WareSkuDao;
 import com.atguigu.gulimall.ware.entity.WareSkuEntity;
-import com.atguigu.gulimall.ware.exception.NotStockException;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
 import com.atguigu.gulimall.ware.service.WareSkuService;
-import com.atguigu.gulimall.ware.vo.LockStockResult;
 import com.atguigu.gulimall.ware.vo.OrderItemVo;
 import com.atguigu.gulimall.ware.vo.SkuHasStockVo;
 import com.atguigu.gulimall.ware.vo.WareSkuLockVo;
@@ -110,7 +109,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     /**
      * 为某个订单锁定库存
      *
-     * (rollbackFor = NotStockException.class )
+     * (rollbackFor = NoStockException.class )
      * 默认只要是运行时异常都会回滚
      * @param vo
      * @return
@@ -143,7 +142,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             List<Long> wareIds = hasStock.getWareId();
             if(wareIds == null || wareIds.size()==0){
                 //没有任何仓库有这个商品的库存
-                throw new NotStockException(skuId);
+                throw new NoStockException(skuId);
             }
             for (Long wareId : wareIds) {
                 //成功就返回1，否则就是0
@@ -160,7 +159,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             }
             if(skuStocked == false){
                 //当前商品所有仓库都没有锁住
-                throw new NotStockException(skuId);
+                throw new NoStockException(skuId);
             }
         }
 
