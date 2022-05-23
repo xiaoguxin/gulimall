@@ -52,13 +52,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private ThreadLocal<OrderSubmitVo> confirmVoThreadLocal = new ThreadLocal<>();
 
     @Autowired
-    OrderItemService orderItemService;
+    private OrderItemService orderItemService;
 
     @Autowired
     private MemberFeignService memberFeignService;
 
     @Autowired
-    ProductFeignService productFeignService;
+    private ProductFeignService productFeignService;
 
     @Autowired
     private CartFeignService cartFeignService;
@@ -143,7 +143,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
-
+    // @Transactional(isolation = Isolation.READ_COMMITTED) 设置事务的隔离级别:读已提交
     //本地事务，在分布式系统，只能控制住自己的回滚，控制不了其他服务的回滚
     //分布式事务：最大原因。网络问题+分布式机器。
     @Transactional
