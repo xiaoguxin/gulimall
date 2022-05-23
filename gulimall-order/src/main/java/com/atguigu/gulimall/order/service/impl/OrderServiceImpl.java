@@ -143,15 +143,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
-    /**
-     * 提交订单
-     * @param vo
-     * @return
-     */
-    // @Transactional(isolation = Isolation.READ_COMMITTED) 设置事务的隔离级别
-    // @Transactional(propagation = Propagation.REQUIRED)   设置事务的传播级别
-    @Transactional(rollbackFor = Exception.class)
-    // @GlobalTransactional(rollbackFor = Exception.class)
+
+    //本地事务，在分布式系统，只能控制住自己的回滚，控制不了其他服务的回滚
+    //分布式事务：最大原因。网络问题+分布式机器。
+    @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
 
@@ -187,7 +182,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             if(Math.abs(payAmount.subtract(payPrice).doubleValue())<0.01){
                 //金额对比
                 //....
-                //3、保存订单
+                //TODO 3、保存订单
                 saveOrder(order);
                 //4、库存锁定。只要有异常回滚订单数据。
                 // 订单号、所有订单项（skuId,skuName,num）
@@ -202,10 +197,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return itemVo;
                 }).collect(Collectors.toList());
                 lockVo.setLocks(locks);
+                //TODO 4、远程锁库存
+                //库存成功了，但是网络原因超时了，订单回滚，库存不滚。
                 R r = wmsFeignService.orderLockStock(lockVo);
                 if (r.getCode() == 0){
                     //锁成功了
                     responseVo.setOrder(order.getOrder());
+
+                    //TODO 5、远程扣减积分
+                    //int i = 10/0;//订单回滚，库存不滚
+
                     return responseVo;
 
                 }else{
