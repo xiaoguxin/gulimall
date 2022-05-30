@@ -208,7 +208,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     responseVo.setOrder(order.getOrder());
 
                     //TODO 5、远程扣减积分
-                    //int i = 10/0;//订单回滚，库存不滚
+                    int i = 10/0;//订单回滚，库存不滚
 
                     return responseVo;
 
