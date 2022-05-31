@@ -2,6 +2,7 @@ package com.atguigu.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.order.dao.OrderItemDao;
@@ -16,6 +17,8 @@ import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.to.OrderCreateTo;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -50,6 +53,9 @@ import static com.atguigu.gulimall.order.constant.OrderConstant.USER_ORDER_TOKEN
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
     private ThreadLocal<OrderSubmitVo> confirmVoThreadLocal = new ThreadLocal<>();
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Autowired
     private OrderItemService orderItemService;
@@ -208,7 +214,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     responseVo.setOrder(order.getOrder());
 
                     //TODO 5、远程扣减积分
-                    int i = 10/0;//订单回滚，库存不滚
+                    //int i = 10/0;//订单回滚，库存不滚
+
+                    //TODO 订单创建成功发送消息给MQ
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrder());
+
 
                     return responseVo;
 
@@ -230,6 +240,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public OrderEntity getOrderByOrderSn(String orderSn) {
         OrderEntity orderEntity = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
         return orderEntity;
+    }
+
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        //查询当前这个订单的最新状态
+        OrderEntity orderEntity = this.getById(entity.getId());
+        if(orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()){
+            //关单
+            OrderEntity update = new OrderEntity();
+            update.setId(entity.getId());
+            update.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(update);
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity,orderTo);
+            //发给MQ一个
+            rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+        }
+
     }
 
     /**
