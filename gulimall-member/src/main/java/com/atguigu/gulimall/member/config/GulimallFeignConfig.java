@@ -1,10 +1,9 @@
-package com.atguigu.gulimall.order.config;
+package com.atguigu.gulimall.member.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -15,7 +14,6 @@ public class GulimallFeignConfig {
 
     @Bean("requestInterceptor")
     public RequestInterceptor requestInterceptor(){
-
         return new RequestInterceptor() {
 
             @Override
