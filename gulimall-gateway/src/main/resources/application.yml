@@ -77,5 +77,10 @@ spring:
           uri: lb://gulimall-order
           predicates:
             - Host=order.mall.com
+
+        - id: mall_member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Host=member.mall.com
   application:
     name: gulimall-gateway
