@@ -28,10 +28,6 @@ public class OrderCloseListener {
         }catch (Exception e){
             channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
         }
-
-
-
-
     }
 
 
