@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -22,8 +23,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("coupon/seckillsession")
 public class SeckillSessionController {
+
     @Autowired
     private SeckillSessionService seckillSessionService;
+
+    @GetMapping("/lates3DaySession")
+    public R getLates3DaySession(){
+        List<SeckillSessionEntity> sessions =  seckillSessionService.getLates3DaySession();
+        return R.ok().setData(sessions);
+    }
 
     /**
      * 列表

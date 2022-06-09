@@ -36,6 +36,13 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <!--以后使用redisson作为所有分布式锁，分布式对象等功能框架-->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.13.5</version>
+        </dependency>
+
         <!--热部署：devtools-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
