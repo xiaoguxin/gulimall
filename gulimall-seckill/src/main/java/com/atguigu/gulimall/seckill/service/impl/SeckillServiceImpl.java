@@ -106,7 +106,7 @@ public class SeckillServiceImpl implements SeckillService {
                 semaphore.trySetPermits(seckillSkuVo.getSeckillCount().intValue());
 
                 String jsonString = JSON.toJSONString(redisTo);
-                ops.put(seckillSkuVo.getSkuId(),jsonString);
+                ops.put(seckillSkuVo.getSkuId().toString(),jsonString);
            });
         });
     }
