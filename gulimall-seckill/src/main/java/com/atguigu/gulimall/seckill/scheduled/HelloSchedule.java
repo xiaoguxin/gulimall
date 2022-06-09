@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@EnableAsync
-@EnableScheduling
+/*@EnableAsync
+@EnableScheduling*/
 public class HelloSchedule {
 
     /**
