@@ -3,6 +3,7 @@ package com.atguigu.gulimall.product.vo.itemVo;
 import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SkuInfoEntity;
 import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimall.product.vo.SeckillInfoVo;
 import lombok.Data;
 
 import java.util.List;
@@ -26,4 +27,7 @@ public class SkuItemVo {
 
     //5、获取spu的规格参数信息
     List<SpuItemAttrGroupVo> groupAttrs;
+
+    //6、当前商品的秒杀优惠信息
+    SeckillInfoVo seckillInfo;
 }

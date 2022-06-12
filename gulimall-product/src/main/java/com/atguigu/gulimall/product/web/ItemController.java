@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product.web;
 
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.service.SkuInfoService;
 import com.atguigu.gulimall.product.vo.itemVo.SkuItemVo;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.seckill.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.seckill.feign.CouponFeignService;
@@ -19,6 +20,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,6 +96,35 @@ public class SeckillServiceImpl implements SeckillService {
         //2、获取这个秒杀场次需要的所有商品信息
 
 
+        return null;
+    }
+
+    @Override
+    public SeckillSkuRedisTo getSkuSeckillInfo(Long skuId) {
+
+        //1、找到所有需要参与秒杀的商品的key
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+
+        Set<String> keys = hashOps.keys();
+        if (keys!=null&&keys.size()>0){
+            String regx = "\\d_"+skuId;
+            for(String key:keys){
+                // 6_4
+                if(Pattern.matches(regx,key)){
+                    String json = hashOps.get(key);
+                    SeckillSkuRedisTo skuRedisTo = JSON.parseObject(json, SeckillSkuRedisTo.class);
+
+                    //随机码
+                    long current = new Date().getTime();
+                    if (current>=skuRedisTo.getStartTime() && current<=skuRedisTo.getEndTime()){
+
+                    }else{
+                        skuRedisTo.setRandomCode(null);
+                    }
+                    return skuRedisTo;
+                }
+            }
+        }
         return null;
     }
 
