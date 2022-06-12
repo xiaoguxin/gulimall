@@ -18,9 +18,7 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +60,43 @@ public class SeckillServiceImpl implements SeckillService {
         }
     }
 
+    //返回当前时间可以参与的秒杀商品信息
+    @Override
+    public List<SeckillSkuRedisTo> getCurrentSeskillSkus() {
+        //1、确定当前时间属于哪个秒杀场次。
+        //1970 -
+        long time = new Date().getTime();
+
+        Set<String> keys = redisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
+        for(String key : keys){
+            //seckill:session:123_232
+            String replace = key.replace(SESSIONS_CACHE_PREFIX,"");
+            String[] s = replace.split("_");
+            Long start = Long.parseLong(s[0]);
+            Long end = Long.parseLong(s[1]);
+            if (time>=start && time<=end){
+                //2、获取这个秒杀场次需要的所有商品信息
+                List<String> range = redisTemplate.opsForList().range(key, -100, 100);
+                BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                List<String> list = hashOps.multiGet(range);
+                if (list != null){
+                    List<SeckillSkuRedisTo> collect = list.stream().map(item -> {
+                        SeckillSkuRedisTo redis = JSON.parseObject(item, SeckillSkuRedisTo.class);
+                        //redis.setRandomCode(null);当前秒杀已经开始就需要随机码
+                        return redis;
+                    }).collect(Collectors.toList());
+                    return collect;
+                }
+                break;
+            }
+        }
+
+        //2、获取这个秒杀场次需要的所有商品信息
+
+
+        return null;
+    }
+
     private void saveSessionInfos(List<SeckillSessionsWithSkus> sessions){
         sessions.stream().forEach(session ->{
             Long startTime = session.getStartTime().getTime();
@@ -95,7 +130,7 @@ public class SeckillServiceImpl implements SeckillService {
                     if (skuInfo.getCode() == 0){
                         SkuInfoVo info = skuInfo.getData2("skuInfo", new TypeReference<SkuInfoVo>() {
                         });
-                        redisTo.setSkuInfoVo(info);
+                        redisTo.setSkuInfo(info);
 
                     }
 

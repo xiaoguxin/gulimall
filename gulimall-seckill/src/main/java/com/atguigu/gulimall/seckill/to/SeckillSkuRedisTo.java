@@ -3,11 +3,13 @@ package com.atguigu.gulimall.seckill.to;
 import com.atguigu.gulimall.seckill.vo.SkuInfoVo;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class SeckillSkuRedisTo {
+public class SeckillSkuRedisTo implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 活动id
      */
@@ -42,7 +44,7 @@ public class SeckillSkuRedisTo {
     private Integer seckillSort;
 
     //sku的详细信息
-    private SkuInfoVo skuInfoVo;
+    private SkuInfoVo skuInfo;
 
     //当前商品秒杀的开始时间
     private Long startTime;

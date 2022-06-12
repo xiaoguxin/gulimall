@@ -90,5 +90,10 @@ spring:
           uri: lb://gulimall-member
           predicates:
             - Host=member.mall.com
+
+        - id: mall_seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.mall.com
   application:
     name: gulimall-gateway

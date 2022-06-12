@@ -1,8 +1,13 @@
 package com.atguigu.gulimall.seckill.vo;
 
+import lombok.Data;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class SkuInfoVo {
+@Data
+public class SkuInfoVo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * skuId
