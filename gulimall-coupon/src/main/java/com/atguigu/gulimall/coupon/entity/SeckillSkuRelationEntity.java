@@ -40,11 +40,11 @@ public class SeckillSkuRelationEntity implements Serializable {
 	/**
 	 * 秒杀价格
 	 */
-	private BigDecimal seckillPrice;
+	private Integer seckillPrice;
 	/**
 	 * 秒杀总量
 	 */
-	private BigDecimal seckillCount;
+	private Integer seckillCount;
 	/**
 	 * 每人限购数量
 	 */
