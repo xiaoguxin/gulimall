@@ -140,7 +140,8 @@ public class SeckillServiceImpl implements SeckillService {
         return null;
     }
 
-    // 7_1
+    // TODO 上架秒杀商品的时候，每一个数据都有过期时间。
+    // TODO 秒杀后续的流程，简化了收货地址等信息。
     @Override
     public String kill(String killId, String key, Integer num) {
 
