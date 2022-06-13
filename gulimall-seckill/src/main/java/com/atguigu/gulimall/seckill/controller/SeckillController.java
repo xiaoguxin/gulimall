@@ -39,9 +39,12 @@ public class SeckillController {
                      @RequestParam String key,
                      @RequestParam Integer num){
 
+
+        String orderSn = seckillService.kill(killId,key,num);
+
         //1、判断是否登录
 
-        return null;
+        return R.ok().setData(orderSn);
     }
 
 }
