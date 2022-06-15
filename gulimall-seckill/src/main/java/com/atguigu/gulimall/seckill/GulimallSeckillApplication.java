@@ -13,6 +13,9 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  *      2)、下载sentinel的控制台
  *      3)、配置sentinel控制台地址信息
  *      4)、在控制台调整参数【默认所有的流控设置保存在内存中。重启失效】
+ *
+ *  2、每一个微服务都导入actuator;并配合management.endpoints.web.exposure.include=*
+ *  3、自定义sentinel流控返回数据
  */
 @EnableRedisHttpSession //整合redis作为session存储
 @EnableDiscoveryClient

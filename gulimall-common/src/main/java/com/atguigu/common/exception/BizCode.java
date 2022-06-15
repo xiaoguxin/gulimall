@@ -23,6 +23,7 @@ public enum BizCode {
     UNKNOW_EXCEPTION(10000, "系统未知异常"),
 
     VAILD_EXCEPTION(10001, "参数格式校验失败"),
+    TO_MANY_REQUEST(10002,"请求流量过大，请稍后再试"),
 
     SMS_PHONE_FORMAT(10002,"手机号码格式有误"),
 
