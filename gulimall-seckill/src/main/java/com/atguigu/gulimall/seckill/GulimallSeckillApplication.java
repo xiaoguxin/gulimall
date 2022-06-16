@@ -16,6 +16,12 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  *
  *  2、每一个微服务都导入actuator;并配合management.endpoints.web.exposure.include=*
  *  3、自定义sentinel流控返回数据
+ *
+ *  4、使用Sentinel来保护feign远程调用：熔断；
+ *      1)、调用方的熔断保护：feign.sentinel.enabled=true
+ *      2)、调用方手动指定远程服务的降级策略。远程服务被降级处理。触发我们的熔断回调方法
+ *      3)、超大浏览的时候，必须牺牲一些远程服务。在服务的提供方（远程服务）指定降级策略；
+ *          提供方是在运行。但是不运行自己的业务逻辑，返回的是默认的降级数据（限流的数据）。
  */
 @EnableRedisHttpSession //整合redis作为session存储
 @EnableDiscoveryClient
